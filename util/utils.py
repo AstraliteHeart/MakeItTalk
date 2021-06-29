@@ -266,7 +266,6 @@ def smooth(x, window_len=11, window='hanning'):
 
 
 def get_puppet_info(DEMO_CH, ROOT_DIR):
-    import numpy as np
     B = 5000
     # for wilk example
     if (DEMO_CH == 'wilk_old'):
