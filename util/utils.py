@@ -355,7 +355,12 @@ def norm_input_face(shape_3d):
     return shape_3d, scale, shift
 
 def add_naive_eye(fl):
-    for t in range(fl.shape[0]):
+    length = fl.shape[0]
+
+    if length < 30:
+        return fl
+
+    for t in range(length):
         r = 0.95
         fl[t, 37], fl[t, 41] = r * fl[t, 37] + (1 - r) * fl[t, 41], (1 - r) * fl[t, 37] + r * fl[t, 41]
         fl[t, 38], fl[t, 40] = r * fl[t, 38] + (1 - r) * fl[t, 40], (1 - r) * fl[t, 38] + r * fl[t, 40]
@@ -363,7 +368,6 @@ def add_naive_eye(fl):
         fl[t, 44], fl[t, 46] = r * fl[t, 44] + (1 - r) * fl[t, 46], (1 - r) * fl[t, 44] + r * fl[t, 46]
 
     K1, K2 = 10, 15
-    length = fl.shape[0]
     close_time_stamp = [30]
     t = 30
     while (t < length - 1 - K2):
