@@ -19,7 +19,7 @@ import pickle
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-PATH_PATH = os.path.dirname(os.path.realpath(
+ROOT_PATH = os.path.dirname(os.path.realpath(
     os.path.join(__file__, '..', '..')))
 
 
@@ -35,14 +35,14 @@ class Audio2landmark_model():
         self.options = options
 
         self.std_face_id = np.loadtxt(os.path.join(
-            PATH_PATH, 'src/dataset/utils/STD_FACE_LANDMARKS.txt'))
+            ROOT_PATH, 'src/dataset/utils/STD_FACE_LANDMARKS.txt'))
         if(jpg_shape is not None):
             self.std_face_id = jpg_shape
         self.std_face_id = self.std_face_id.reshape(1, 204)
         self.std_face_id = torch.tensor(
             self.std_face_id, requires_grad=False, dtype=torch.float).to(device)
 
-        self.eval_data = Audio2landmark_Dataset(dump_dir=os.path.join(PATH_PATH, 'examples/dump'),
+        self.eval_data = Audio2landmark_Dataset(dump_dir=os.path.join(ROOT_PATH, 'examples/dump'),
                                                 dump_name='random',
                                                 status='val',
                                                 num_window_frames=18,
@@ -62,7 +62,7 @@ class Audio2landmark_model():
             device, get_n_params(self.G)/1.0e6))
 
         model_dict = self.G.state_dict()
-        ckpt = torch.load(os.path.join(PATH_PATH, options.load_a2l_G_name))
+        ckpt = torch.load(os.path.join(ROOT_PATH, options.load_a2l_G_name))
         pretrained_dict = {k: v for k, v in ckpt['G'].items() if k.split('.')[
             0] not in ['comb_mlp']}
         model_dict.update(pretrained_dict)
@@ -77,7 +77,7 @@ class Audio2landmark_model():
                                         in_size=80, use_prior_net=True,
                                         bidirectional=False, drop_out=0.5)
 
-        ckpt = torch.load(os.path.join(PATH_PATH, options.load_a2l_C_name))
+        ckpt = torch.load(os.path.join(ROOT_PATH, options.load_a2l_C_name))
         self.C.load_state_dict(ckpt['model_g_face_id'])
         # self.C.load_state_dict(ckpt['C'])
         print('======== LOAD PRETRAINED FACE ID MODEL {} ========='.format(
@@ -86,10 +86,10 @@ class Audio2landmark_model():
 
         self.t_shape_idx = (27, 28, 29, 30, 33, 36, 39, 42, 45)
         self.anchor_t_shape = np.loadtxt(
-            os.path.join(PATH_PATH, 'src/dataset/utils/STD_FACE_LANDMARKS.txt'))
+            os.path.join(ROOT_PATH, 'src/dataset/utils/STD_FACE_LANDMARKS.txt'))
         self.anchor_t_shape = self.anchor_t_shape[self.t_shape_idx, :]
 
-        # with open(os.path.join(PATH_PATH, 'examples', 'dump', 'emb.pickle'), 'rb') as fp:
+        # with open(os.path.join(ROOT_PATH, 'examples', 'dump', 'emb.pickle'), 'rb') as fp:
         #    self.test_embs = pickle.load(fp)
 
         # print('====================================')
