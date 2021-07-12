@@ -4,40 +4,41 @@ import matplotlib.pyplot as plt
 import os
 import random
 
+
 def closest_node(xy, pts):
-    #search the list of nodes for the one closest to node, return the name
+    # search the list of nodes for the one closest to node, return the name
     dist_2 = np.sqrt(np.sum((pts - np.array(xy).reshape((-1, 2)))**2, axis=1))
     if (dist_2[np.argmin(dist_2)] > 20):
         return -1
     return np.argmin(dist_2)
 
 
-def draw_landmarks(img, pts, pc=(0,0,255), radius=2, lc=(0,255,0), thickness=2):
+def draw_landmarks(img, pts, pc=(0, 0, 255), radius=2, lc=(0, 255, 0), thickness=2):
 
     for i in range(0, 16):
         cv2.line(img, (int(pts[i, 0]), int(pts[i, 1])),
-                     (int(pts[i+1, 0]), int(pts[i+1, 1])), (0, 255, 0), thickness)
+                 (int(pts[i+1, 0]), int(pts[i+1, 1])), (0, 255, 0), thickness)
     for i in range(17, 21):
         cv2.line(img, (int(pts[i, 0]), int(pts[i, 1])),
-                     (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 0, 0), thickness)
+                 (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 0, 0), thickness)
     for i in range(22, 26):
         cv2.line(img, (int(pts[i, 0]), int(pts[i, 1])),
-                     (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 0, 0), thickness)
+                 (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 0, 0), thickness)
     for i in range(27, 35):
         cv2.line(img, (int(pts[i, 0]), int(pts[i, 1])),
-                     (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 255, 0), thickness)
+                 (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 255, 0), thickness)
     for i in range(36, 41):
         cv2.line(img, (int(pts[i, 0]), int(pts[i, 1])),
-                     (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 0, 255), thickness)
+                 (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 0, 255), thickness)
     for i in range(42, 47):
         cv2.line(img, (int(pts[i, 0]), int(pts[i, 1])),
-                     (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 0, 255), thickness)
+                 (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 0, 255), thickness)
     for i in range(48, 59):
         cv2.line(img, (int(pts[i, 0]), int(pts[i, 1])),
-                     (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 128, 0), thickness)
+                 (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 128, 0), thickness)
     for i in range(60, 67):
         cv2.line(img, (int(pts[i, 0]), int(pts[i, 1])),
-                     (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 128, 128), thickness)
+                 (int(pts[i+1, 0]), int(pts[i+1, 1])), (255, 128, 128), thickness)
     cv2.line(img, (int(pts[48, 0]), int(pts[48, 1])),
              (int(pts[59, 0]), int(pts[59, 1])), (255, 128, 0), thickness)
     cv2.line(img, (int(pts[60, 0]), int(pts[60, 1])),
@@ -49,7 +50,8 @@ def draw_landmarks(img, pts, pc=(0,0,255), radius=2, lc=(0,255,0), thickness=2):
 
 def norm_anno(ROOT_DIR, CH, param=[0.75, 0.35, 0.6, 0.6], show=True):
 
-    face_tmp = np.loadtxt(os.path.join(ROOT_DIR, CH + '_face_open_mouth.txt'))  # .reshape(1, 204)
+    face_tmp = np.loadtxt(os.path.join(
+        ROOT_DIR, CH + '_face_open_mouth.txt'))  # .reshape(1, 204)
     try:
         face_tmp = face_tmp.reshape(68, 3)
     except:
@@ -64,26 +66,36 @@ def norm_anno(ROOT_DIR, CH, param=[0.75, 0.35, 0.6, 0.6], show=True):
 
     face_tmp[:, -1] = face_std[:, -1]
     face_tmp[:, 0:2] = -face_tmp[:, 0:2]
-    np.savetxt(os.path.join(ROOT_DIR, CH + '_face_open_mouth_norm.txt'), face_tmp, fmt='%.4f')
-    np.savetxt(os.path.join(ROOT_DIR, CH + '_scale_shift.txt'), np.array([scale, shift[0], shift[1]]), fmt='%.10f')
+    np.savetxt(os.path.join(ROOT_DIR, CH +
+                            '_face_open_mouth_norm.txt'), face_tmp, fmt='%.4f')
+    np.savetxt(os.path.join(ROOT_DIR, CH + '_scale_shift.txt'),
+               np.array([scale, shift[0], shift[1]]), fmt='%.10f')
 
     # Force the frame to close mouth
-    face_tmp[49:54, 1] = param[0] * face_tmp[49:54, 1] + (1-param[0]) * face_tmp[59:54:-1, 1]
-    face_tmp[59:54:-1, 1] = param[1] * face_tmp[49:54, 1] + (1-param[1]) * face_tmp[59:54:-1, 1]
-    face_tmp[61:64, 1] = param[2] * face_tmp[61:64, 1] + (1-param[2]) * face_tmp[67:64:-1, 1]
-    face_tmp[67:64:-1, 1] = param[3] * face_tmp[61:64, 1] + (1-param[3]) * face_tmp[67:64:-1, 1]
+    face_tmp[49:54, 1] = param[0] * face_tmp[49:54, 1] + \
+        (1-param[0]) * face_tmp[59:54:-1, 1]
+    face_tmp[59:54:-1, 1] = param[1] * face_tmp[49:54, 1] + \
+        (1-param[1]) * face_tmp[59:54:-1, 1]
+    face_tmp[61:64, 1] = param[2] * face_tmp[61:64, 1] + \
+        (1-param[2]) * face_tmp[67:64:-1, 1]
+    face_tmp[67:64:-1, 1] = param[3] * face_tmp[61:64, 1] + \
+        (1-param[3]) * face_tmp[67:64:-1, 1]
     face_tmp[61:64, 0] = 0.6 * face_tmp[61:64, 0] + 0.4 * face_tmp[67:64:-1, 0]
-    face_tmp[67:64:-1, 0] = 0.6 * face_tmp[61:64, 0] + 0.4 * face_tmp[67:64:-1, 0]
+    face_tmp[67:64:-1, 0] = 0.6 * \
+        face_tmp[61:64, 0] + 0.4 * face_tmp[67:64:-1, 0]
 
-    np.savetxt(os.path.join(ROOT_DIR, CH + '_face_close_mouth.txt'), face_tmp, fmt='%.4f')
+    np.savetxt(os.path.join(ROOT_DIR, CH + '_face_close_mouth.txt'),
+               face_tmp, fmt='%.4f')
 
-    std_face_id = np.loadtxt(os.path.join(ROOT_DIR, CH + '_face_close_mouth.txt'))  # .reshape(1, 204)
+    std_face_id = np.loadtxt(os.path.join(
+        ROOT_DIR, CH + '_face_close_mouth.txt'))  # .reshape(1, 204)
     std_face_id = std_face_id.reshape(68, 3)
 
     def vis_landmark_on_plt(fl, x_offset=0.0, show_now=True):
         def draw_curve(shape, idx_list, loop=False, x_offset=0.0, c=None):
             for i in idx_list:
-                plt.plot((shape[i, 0] + x_offset, shape[i + 1, 0] + x_offset), (-shape[i, 1], -shape[i + 1, 1]), c=c)
+                plt.plot((shape[i, 0] + x_offset, shape[i + 1, 0] +
+                          x_offset), (-shape[i, 1], -shape[i + 1, 1]), c=c)
             if (loop):
                 plt.plot((shape[idx_list[0], 0] + x_offset, shape[idx_list[-1] + 1, 0] + x_offset),
                          (-shape[idx_list[0], 1], -shape[idx_list[-1] + 1, 1]), c=c)
@@ -92,17 +104,21 @@ def norm_anno(ROOT_DIR, CH, param=[0.75, 0.35, 0.6, 0.6], show=True):
         draw_curve(fl, list(range(17, 21)), x_offset=x_offset)  # eye brow
         draw_curve(fl, list(range(22, 26)), x_offset=x_offset)
         draw_curve(fl, list(range(27, 35)), x_offset=x_offset)  # nose
-        draw_curve(fl, list(range(36, 41)), loop=True, x_offset=x_offset)  # eyes
+        draw_curve(fl, list(range(36, 41)), loop=True,
+                   x_offset=x_offset)  # eyes
         draw_curve(fl, list(range(42, 47)), loop=True, x_offset=x_offset)
-        draw_curve(fl, list(range(48, 59)), loop=True, x_offset=x_offset, c='b')  # mouth
-        draw_curve(fl, list(range(60, 67)), loop=True, x_offset=x_offset, c='r')
-        draw_curve(fl, list(range(60, 64)), loop=False, x_offset=x_offset, c='g')
+        draw_curve(fl, list(range(48, 59)), loop=True,
+                   x_offset=x_offset, c='b')  # mouth
+        draw_curve(fl, list(range(60, 67)), loop=True,
+                   x_offset=x_offset, c='r')
+        draw_curve(fl, list(range(60, 64)), loop=False,
+                   x_offset=x_offset, c='g')
 
-        if (show_now):
+        if show_now:
+            print('show_now')
             plt.show()
 
     vis_landmark_on_plt(std_face_id, show_now=show)
-
 
 
 # Check if a point is inside a rectangle
@@ -125,7 +141,7 @@ def draw_point(img, p, color):
 
 # Draw delaunay triangles
 def draw_delaunay(img, subdiv, delaunay_color):
-    triangleList = subdiv.getTriangleList();
+    triangleList = subdiv.getTriangleList()
     size = img.shape
     r = (0, 0, size[1], size[0])
 
@@ -150,12 +166,14 @@ def draw_voronoi(img, subdiv):
         for f in facets[i]:
             ifacet_arr.append(f)
         ifacet = np.array(ifacet_arr, np.int)
-        color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        color = (random.randint(0, 255), random.randint(
+            0, 255), random.randint(0, 255))
 
         cv2.fillConvexPoly(img, ifacet, color, cv2.LINE_AA, 0)
         ifacets = np.array([ifacet])
         cv2.polylines(img, ifacets, True, (0, 0, 0), 1, cv2.LINE_AA, 0)
-        cv2.circle(img, (centers[i][0], centers[i][1]), 3, (0, 0, 0), -1, cv2.LINE_AA, 0)
+        cv2.circle(img, (centers[i][0], centers[i][1]),
+                   3, (0, 0, 0), -1, cv2.LINE_AA, 0)
     print("end of draw_voronoi")
 
 
@@ -201,12 +219,11 @@ def delauney_tri(ROOT_DIR, test_data, INNER_ONLY=False):
 
     for i in range(file.shape[0]):
         if(INNER_ONLY):
-            if(i >= 48 and i <= 59): ############## for inner lip only
+            if(i >= 48 and i <= 59):  # for inner lip only
                 continue
         line = file[i]
         x, y, z = line
         points.append((int(float(x)), int(float(y))))
-
 
     points.append((0, 0))
     points.append((0, w // 4))
@@ -257,7 +274,7 @@ def delauney_tri(ROOT_DIR, test_data, INNER_ONLY=False):
     print("Press any key to quit...")
     cv2.waitKey(0)
 
-    new_tri = [];
+    new_tri = []
 
     for line in triangleList:
         p1 = (line[0], line[1])
@@ -277,11 +294,3 @@ def delauney_tri(ROOT_DIR, test_data, INNER_ONLY=False):
 
     a = np.array(new_tri).astype(int)
     np.savetxt(os.path.join(ROOT_DIR, CH + '_delauney_tri.txt'), a, fmt='%d')
-
-
-
-
-
-
-
-
